@@ -278,6 +278,7 @@ Terraform only destroys resources tracked in the current state. Afterward, verif
 - CI/CD deployment approval gates
 - Integration with the Cloud Infrastructure Health Monitor project
 - Optional AI-assisted incident analysis using the existing structured context
+<img width="1447" height="331" alt="image" src="https://github.com/user-attachments/assets/e28f269d-9a9a-4db7-92ff-ee950b9703bc" />
 
 ## License
 
