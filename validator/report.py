@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 from typing import Any
 
+from validator.diagnostics import build_diagnostics
 from validator.result import CheckResult, Status, overall_status
 
 
@@ -16,6 +17,7 @@ def build_payload(target: str, results: list[CheckResult]) -> dict[str, Any]:
         "status": status.name,
         "target": target,
         "checks": [result.to_dict() for result in results],
+        "diagnostics": build_diagnostics(results),
     }
 
 
@@ -37,5 +39,12 @@ def render_text(target: str, results: list[CheckResult]) -> str:
             lines.extend(["", current_layer.upper()])
         lines.append(f"{result.name:<26} {result.summary:<20} {result.status.name}")
     label = "PASSED" if status == Status.PASS else status.name
+    diagnostics = build_diagnostics(results)
+    if diagnostics["failure_layer"]:
+        lines.extend(["", "FAILURE DIAGNOSTICS", "Observed facts:"])
+        lines.extend(f"- {item}" for item in diagnostics["observed"])
+        lines.append("Possible investigation areas:")
+        lines.extend(f"- {item}" for item in diagnostics["possible_investigation_areas"])
+        lines.append(f"Advisory: {diagnostics['advisory']}")
     lines.extend(["", "-" * 54, f"DEPLOYMENT STATUS: {label}", "-" * 54])
     return "\n".join(lines)
