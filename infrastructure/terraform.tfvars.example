@@ -1,0 +1,11 @@
+# Review all values and costs before copying this file to terraform.tfvars.
+aws_region      = "us-east-1"
+instance_type   = "t3.micro"
+project_name    = "cloud-deployment-validator"
+environment     = "demo"
+application_port = 80
+
+# SSH is disabled by default. If needed, use a single trusted public IP (/32)
+# and supply the name of an existing EC2 key pair. Never use 0.0.0.0/0.
+administrative_cidr = null
+key_name             = null
