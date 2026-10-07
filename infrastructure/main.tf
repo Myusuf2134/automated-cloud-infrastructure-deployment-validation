@@ -102,7 +102,12 @@ resource "aws_instance" "application" {
   vpc_security_group_ids      = [aws_security_group.application.id]
   associate_public_ip_address = true
   key_name                    = var.key_name
-  user_data                   = file("${path.module}/user_data.sh")
+  user_data = templatefile("${path.module}/user_data.sh", {
+    application_port        = var.application_port
+    app_py_base64           = filebase64("${path.module}/../app/app.py")
+    app_requirements_base64 = filebase64("${path.module}/../app/requirements.txt")
+    app_dockerfile_base64   = filebase64("${path.module}/../app/Dockerfile")
+  })
   user_data_replace_on_change = true
 
   metadata_options {
