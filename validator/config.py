@@ -14,6 +14,7 @@ class ConfigurationError(ValueError):
 class ValidationConfig:
     host: str
     port: int = 80
+    scheme: str = "http"
     health_path: str = "/health"
     expected_status: int = 200
     timeout_seconds: float = 5.0
@@ -24,6 +25,8 @@ class ValidationConfig:
     def __post_init__(self) -> None:
         if not self.host or not self.host.strip():
             raise ConfigurationError("A non-empty deployment host is required.")
+        if self.scheme not in ("http", "https"):
+            raise ConfigurationError("Scheme must be 'http' or 'https'.")
         if not 1 <= self.port <= 65535:
             raise ConfigurationError("Port must be between 1 and 65535.")
         if not self.health_path.startswith("/"):
@@ -38,7 +41,7 @@ class ValidationConfig:
         host = self.host
         if ":" in host and not host.startswith("["):
             host = f"[{host}]"
-        return f"http://{host}:{self.port}{self.health_path}"
+        return f"{self.scheme}://{host}:{self.port}{self.health_path}"
 
     @classmethod
     def from_url(cls, url: str, **kwargs) -> "ValidationConfig":
@@ -49,6 +52,7 @@ class ValidationConfig:
         return cls(
             host=parsed.hostname,
             port=parsed.port or default_port,
+            scheme=parsed.scheme,
             health_path=parsed.path or "/health",
             **kwargs,
         )
